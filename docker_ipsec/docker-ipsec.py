@@ -7,12 +7,6 @@ import sys
 import pyroute2
 import iptc
 
-def down(connectionName):
-    
-
-def up():
-    
-
 def main():
     desc = 'Start and stop IPSec tunnels while allowing docker containers to route traffic down the tunnels'
     parser = argparse.ArgumentParser(description=desc)
