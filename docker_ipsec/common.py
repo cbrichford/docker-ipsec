@@ -143,7 +143,7 @@ def ipsec(*args, verbose=False):
     cmdLine.extend(args)
         
     with tempfile.TemporaryFile() as outputFile:
-        statusCode = subprocess.call(args, stdin=subprocess.DEVNULL, stdout=outputFile, stderr=outputFile)
+        statusCode = subprocess.call(cmdLine, stdin=subprocess.DEVNULL, stdout=outputFile, stderr=outputFile)
         if (verbose or statusCode != 0):
             outputFile.seek(0)
             outputStr = outputFile.read()
