@@ -109,7 +109,7 @@ def installIPTablesRule(table, virtualIP, outInterface, destCIDR, dockerCIDR):
         'destCIDR' : destCIDR,
         'dockerCIDR' : dockerCIDR
     }
-    commentJSONStr=json.dumps(commentDict, ensure_ascii=True, sort_key=True, separators=(',', ':'))
+    commentJSONStr=json.dumps(commentDict, ensure_ascii=True, sort_keys=True, separators=(',', ':'))
     comment.set_parameter('comment', 'docker_ipsec:{0}'.format(commentJSONStr))
 
     target = rule.create_target('SNAT')
