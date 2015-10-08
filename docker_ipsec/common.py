@@ -77,7 +77,7 @@ class DockerInfo:
         if (self.__ip is None):
             raise RuntimeError('Unable to get docker ip address: {0}'.format(toJSON(dockerAddress)))
 
-        self.__ipLen = dockerAddress.get('prefixLen', None)
+        self.__ipLen = dockerAddress.get('prefixlen', None)
         if (self.__ipLen is None):
             raise RuntimeError('Unable to get docker net mask: {0}'.format(toJSON(dockerAddress)))
 
