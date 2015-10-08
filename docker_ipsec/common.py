@@ -125,14 +125,15 @@ def removeIPTablesRules():
     chain = iptc.Chain(table, 'POSTROUTING')
     for r in chain.rules:
         matches = r.matches
-        matchesEntries = tuple(map(lambda m: (m.name, m.parameters), matches))
+        matchesEntries = tuple(map(lambda m: (m.name, m.get_all_parameters()), matches))
         matchDict = dict(matchesEntries)
         print(json.dumps(matchDict, indent=2, sort_keys=True))
         comment = matchDict.get('comment', None)
         if (comment is None):
             continue
-        commentStr = comment.get('comment', '')
-        if (not commentStr.startswith('docker_ipsec:')):
+        commentValues = comment.get('comment', '')
+        matchedComments = tuple(filter(lambda c: c.startswith('docker_ipsec:'), commentValues))
+        if (len(matchedComments) == 0):
             continue
         chain.delete_rule(r)
     table.commit()
