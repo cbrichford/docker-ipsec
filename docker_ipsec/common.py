@@ -147,11 +147,5 @@ def ipsec(*args, verbose=False):
             outputStr = outputFile.read().decode("utf-8", "strict")
             print(outputStr)
         return statusCode == 0
-
-
-
-
-# sudo iptables -j SNAT -t nat -I POSTROUTING 1 -o eth0 -d 172.31.0.0/16 -s 172.17.0.0/16 --to-source 172.15.15.4
-
     
 

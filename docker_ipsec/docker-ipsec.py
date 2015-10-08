@@ -46,13 +46,16 @@ def main():
 
     if (parsedArgs.command == 'down'):
         docker_ipsec.removeIPTablesRules()
-        docker_ipsec.ipsec('down', ipsecConnectionName, verbose=True)
+        if (not docker_ipsec.ipsec('down', ipsecConnectionName, verbose=True)):
+            return 1
         return 0
 
     ipRoute = pyroute2.IPRoute()
     dockerInfo = docker_ipsec.DockerInfo(ipRoute=ipRoute, dockerBridgeName=parsedArgs.dockerBridge)
 
-    docker_ipsec.ipsec('up', ipsecConnectionName, verbose=True)
+    if (not docker_ipsec.ipsec('up', ipsecConnectionName, verbose=True)):
+        return 1
+
     ipsecInfo = docker_ipsec.IPSecInfo(ipRoute=ipRoute, ipsecTableIndex=parsedArgs.ipsecRouteTable)
 
     def ipsecEntryToIPTablesRule(e):
