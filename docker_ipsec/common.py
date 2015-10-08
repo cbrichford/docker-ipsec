@@ -134,6 +134,7 @@ def removeIPTablesRules():
         if (not commentStr.startswith('docker_ipsec:')):
             continue
         chain.delete_rule(r)
+    table.commit()
 
 def ipsec(*args, verbose=False):
     cmdLine = ['ipsec']
