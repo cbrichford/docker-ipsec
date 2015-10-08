@@ -11,7 +11,7 @@ def main():
     desc = 'Start and stop IPSec tunnels while allowing docker containers to route traffic down the tunnels'
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument('up/down', type=str, dest='command', choices=set(('up', 'down'))
+    parser.add_argument('up/down', type=str, dest='command', choices=set(('up', 'down')),
                         help='Start or stop an IPSec tunnel')
 
     parser.add_argument('connection name', dest='conection', type=str, default=None)
