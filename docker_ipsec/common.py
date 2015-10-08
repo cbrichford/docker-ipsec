@@ -34,9 +34,6 @@ class IPSecInfoEntry:
         if (self.__destLen is None):
             raise RuntimeError('Unable to get destination mask')
 
-        if (defaultGatewayInterfaceName is None):
-            raise RuntimeError('Unable to get interface name from interface: {0}'.format(toJSON(defaultGatewayInterface)))
-
     def destCIDR(self):
         return '{0}/{1}'.format(self.__dest, self.__destLen)
 
@@ -145,10 +142,10 @@ def ipsec(*args, verbose=False):
     with tempfile.TemporaryFile() as outputFile:
         statusCode = subprocess.call(cmdLine, stdin=subprocess.DEVNULL, stdout=outputFile, stderr=outputFile)
         if (verbose or statusCode != 0):
+            print(json.dumps({'verbose' : verbose, 'statusCode' : statusCode}, indent=2))
             outputFile.seek(0)
             outputStr = outputFile.read()
             print(outputStr)
-
         return statusCode == 0
 
 
