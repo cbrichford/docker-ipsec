@@ -3,6 +3,7 @@ import pyroute2
 import netaddr
 import tempfile
 import iptc
+import json
 
 def toJSON(obj):
     return json.dumps(obj, ensure_ascii=True, sort_keys=True)
