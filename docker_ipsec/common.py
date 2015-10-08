@@ -51,7 +51,7 @@ class IPSecInfo:
         ipRoute = ipRoute if ipRoute is not None else pyroute2.IPRoute()
 
         ipSecRoutes = ipRoute.get_routes(table=ipsecTableIndex)
-        self.__entries = tuple(map(IPSecInfoEntry, ipSecRoutes)
+        self.__entries = tuple(map(IPSecInfoEntry, ipSecRoutes))
 
     def entries(self):
         return self.__entries

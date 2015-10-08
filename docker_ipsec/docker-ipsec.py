@@ -6,15 +6,16 @@ import ipsecparse
 import sys
 import pyroute2
 import iptc
+import argparse
 
 def main():
     desc = 'Start and stop IPSec tunnels while allowing docker containers to route traffic down the tunnels'
-    parser = argparse.ArgumentParser(description=desc)
+    parser = argparse.ArgumentParser(description=desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('up/down', type=str, dest='command', choices=set(('up', 'down')),
+    parser.add_argument('command', type=str, choices=set(('up', 'down')),
                         help='Start or stop an IPSec tunnel')
 
-    parser.add_argument('connection name', dest='conection', type=str, default=None)
+    parser.add_argument('connection', type=str, default='')
 
     parser.add_argument('--docker-bridge', dest='dockerBridge', type=str, default='docker0',
                         help='Name of the docker bridge')
@@ -29,7 +30,7 @@ def main():
         ipsecConfStr = ipsecConfFile.read()
 
     ipsecConnectionName = parsedArgs.connection
-    if (ipsecConnectionName is None):
+    if (ipsecConnectionName == ''):
         ipsecConf = ipsecparse.loads(ipsecConfStr)
         ipsecConnectionEntries = map(lambda e: (e[0][0], e[1]),
                                     filter(lambda e: e[0][0] == 'conn' and e[0][1] != '%default',
