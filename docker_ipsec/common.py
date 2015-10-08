@@ -71,7 +71,7 @@ class DockerInfo:
         attrs = dockerAddress.get('attrs', None)
         if (attrs is None):
             raise RuntimeError('Enable to get attrs from docker address: {0}'.format(toJSON(dockerAddress)))
-
+        attrs = dict(attrs)
         self.__ip = attrs.get('IFA_LOCAL', None)
         if (self.__ip is None):
             raise RuntimeError('Unable to get docker ip address: {0}'.format(toJSON(dockerAddress)))
@@ -92,7 +92,7 @@ def getInterfaceNameForIndex(interfaceIndex, ipRoute=None):
         raise RuntimeError('Expected one link for interface index, found {0}'.format(links))
 
     link = links[0]
-    name = links.get('attrs', {}).get('IFLA_IFNAME', None)
+    name = dict(links.get('attrs', [])).get('IFLA_IFNAME', None)
     if (name is None):
         raise RuntimeError('Unable to get interface name: {0}'.format(toJSON(links)))
     return name
