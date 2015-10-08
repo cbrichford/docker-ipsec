@@ -124,10 +124,10 @@ def removeIPTablesRules():
     table.autocommit = False
     chain = iptc.Chain(table, 'POSTROUTING')
     for r in chain.rules:
-        print(json.dumps(r, indent=2, sort_keys=True))
         matches = r.matches
         matchesEntries = tuple(map(lambda m: (m.name, m.parameters), matches))
         matchDict = dict(matchesEntries)
+        print(json.dumps(matchDict, indent=2, sort_keys=True))
         comment = matchDict.get('comment', None)
         if (comment is None):
             continue
