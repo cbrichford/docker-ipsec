@@ -8,6 +8,7 @@ setup(
   license='Apache License 2.0',
   keywords = ['ipsec', 'docker'], # arbitrary keywords
   classifiers = [],
+  scripts=['docker_ipsec/docker-ipsec.py'],
   install_requires=['pyroute2', 'netaddr', 'python-iptables', 'ipsecparse'],
   packages=[
         'docker_ipsec'
