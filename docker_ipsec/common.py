@@ -91,7 +91,7 @@ def getInterfaceNameForIndex(interfaceIndex, ipRoute=None):
         raise RuntimeError('Expected one link for interface index, found {0}'.format(links))
 
     link = links[0]
-    name = dict(links.get('attrs', [])).get('IFLA_IFNAME', None)
+    name = dict(link.get('attrs', [])).get('IFLA_IFNAME', None)
     if (name is None):
         raise RuntimeError('Unable to get interface name: {0}'.format(toJSON(links)))
     return name
@@ -142,9 +142,8 @@ def ipsec(*args, verbose=False):
     with tempfile.TemporaryFile() as outputFile:
         statusCode = subprocess.call(cmdLine, stdin=subprocess.DEVNULL, stdout=outputFile, stderr=outputFile)
         if (verbose or statusCode != 0):
-            print(json.dumps({'verbose' : verbose, 'statusCode' : statusCode}, indent=2))
             outputFile.seek(0)
-            outputStr = outputFile.read()
+            outputStr = outputFile.read().decode("utf-8", "strict")
             print(outputStr)
         return statusCode == 0
 
