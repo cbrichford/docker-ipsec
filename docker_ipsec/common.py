@@ -98,10 +98,12 @@ def getInterfaceNameForIndex(interfaceIndex, ipRoute=None):
 
 def installIPTablesRule(table, virtualIP, outInterface, destCIDR, dockerCIDR):
     rule = iptc.Rule()
-    rule.in_interface = '*'
     rule.out_interface = outInterface
     rule.src = dockerCIDR
     rule.dst = destCIDR
+
+    target = rule.create_target('SNAT')
+    target.set_parameter('to-source', virtualIP)
 
     comment = rule.create_match('comment')
     commentDict = {
@@ -111,9 +113,6 @@ def installIPTablesRule(table, virtualIP, outInterface, destCIDR, dockerCIDR):
     }
     commentJSONStr=json.dumps(commentDict, ensure_ascii=True, sort_keys=True, separators=(',', ':'))
     comment.set_parameter('comment', 'docker_ipsec:{0}'.format(commentJSONStr))
-
-    target = rule.create_target('SNAT')
-    target.set_parameter('to-source', virtualIP)
 
     chain = iptc.Chain(table, 'POSTROUTING')
 
