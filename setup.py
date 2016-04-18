@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
   name = 'docker-ipsec',
-  version = '0.3',
+  version = '0.4',
   description = 'Scripts to start/stop ipsec VPN tunnels while adding/removing iptables rules for docker networking.',
   author = 'Christopher Brichford',
   author_email = 'chrisb@farmersbusinessnetwork.com',

@@ -12,7 +12,7 @@ def main():
     desc = 'Start and stop IPSec tunnels while allowing docker containers to route traffic down the tunnels'
     parser = argparse.ArgumentParser(description=desc, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('command', type=str, choices=set(('up', 'down')),
+    parser.add_argument('command', type=str, choices=set(('up', 'down', 'addbridge', 'removebridge')),
                         help='Start or stop an IPSec tunnel')
 
     parser.add_argument('connection', type=str, default='')
@@ -50,11 +50,22 @@ def main():
             return 1
         return 0
 
+    if (parsedArgs.command == 'removebridge'):
+        def _removalFunc(j):
+            try:
+                return j['dockerBridgeName'] == parsedArgs.dockerBridge
+            except:
+                return Fale
+        docker_ipsec.removeIPTablesRules(filterFunc=_removalFunc)
+        return 0
+
     ipRoute = pyroute2.IPRoute()
     dockerInfo = docker_ipsec.DockerInfo(ipRoute=ipRoute, dockerBridgeName=parsedArgs.dockerBridge)
 
-    if (not docker_ipsec.ipsec('up', ipsecConnectionName, verbose=True)):
+    if parsedArgs.command == 'up' and not docker_ipsec.ipsec('up', ipsecConnectionName, verbose=True):
         return 1
+
+    assert parsedArgs.command in ['up', 'addbridge']
 
     ipsecInfo = docker_ipsec.IPSecInfo(ipRoute=ipRoute, ipsecTableIndex=parsedArgs.ipsecRouteTable)
 
@@ -67,7 +78,7 @@ def main():
     table = iptc.Table(iptc.Table.NAT)
     table.autocommit = False
     for rule in rules:
-        docker_ipsec.installIPTablesRule(table, *rule)
+        docker_ipsec.installIPTablesRule(table, parsedArgs.dockerBridge, *rule)
     table.commit()
 
 if __name__ == '__main__':
