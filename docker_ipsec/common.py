@@ -6,8 +6,12 @@ import iptc
 import json
 import subprocess
 
+from json.decoder import JSONDecodeError
+
 def toJSON(obj):
     return json.dumps(obj, ensure_ascii=True, sort_keys=True)
+
+COMMENT_PREFIX = 'docker_ipsec:'
 
 class IPSecInfoEntry:
     def __init__(self, tableEntry):
@@ -96,7 +100,7 @@ def getInterfaceNameForIndex(interfaceIndex, ipRoute=None):
         raise RuntimeError('Unable to get interface name: {0}'.format(toJSON(links)))
     return name
 
-def installIPTablesRule(table, virtualIP, outInterface, destCIDR, dockerCIDR):
+def installIPTablesRule(table, dockerBridgeName, virtualIP, outInterface, destCIDR, dockerCIDR):
     rule = iptc.Rule()
     rule.out_interface = outInterface
     rule.src = dockerCIDR
@@ -109,16 +113,26 @@ def installIPTablesRule(table, virtualIP, outInterface, destCIDR, dockerCIDR):
     commentDict = {
         'vip' : virtualIP,
         'destCIDR' : destCIDR,
-        'dockerCIDR' : dockerCIDR
+        'dockerCIDR' : dockerCIDR,
+        'dockerBridgeName' : dockerBridgeName
     }
     commentJSONStr=json.dumps(commentDict, ensure_ascii=True, sort_keys=True, separators=(',', ':'))
-    comment.set_parameter('comment', 'docker_ipsec:{0}'.format(commentJSONStr))
+    comment.set_parameter('comment', '{}{}'.format(COMMENT_PREFIX, commentJSONStr))
 
     chain = iptc.Chain(table, 'POSTROUTING')
 
     chain.insert_rule(rule)
     
-def removeIPTablesRules():
+def removeIPTablesRules(filterFunc=None):
+    def _commentFilter(c):
+        if c.startswith(COMMENT_PREFIX):
+            if filterFunc is None:
+                return True
+            try:
+                return filterFunc(json.loads(c[len(COMMENT_PREFIX):]))
+            except json.decoder.JSONDecodeError:
+                return False
+        return False
     table = iptc.Table(iptc.Table.NAT)
     table.autocommit = False
     chain = iptc.Chain(table, 'POSTROUTING')
@@ -130,7 +144,7 @@ def removeIPTablesRules():
         if (comment is None):
             continue
         commentValues = comment.get('comment', '')
-        matchedComments = tuple(filter(lambda c: c.startswith('docker_ipsec:'), commentValues))
+        matchedComments = tuple(filter(_commentFilter, commentValues))
         if (len(matchedComments) == 0):
             continue
         chain.delete_rule(r)
