@@ -55,7 +55,7 @@ def main():
             try:
                 return j['dockerBridgeName'] == parsedArgs.dockerBridge
             except:
-                return Fale
+                return False
         docker_ipsec.removeIPTablesRules(filterFunc=_removalFunc)
         return 0
 
