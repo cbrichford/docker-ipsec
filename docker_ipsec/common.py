@@ -130,7 +130,7 @@ def removeIPTablesRules(filterFunc=None):
                 return True
             try:
                 return filterFunc(json.loads(c[len(COMMENT_PREFIX):]))
-            except json.decoder.JSONDecodeError:
+            except JSONDecodeError:
                 return False
         return False
     table = iptc.Table(iptc.Table.NAT)
