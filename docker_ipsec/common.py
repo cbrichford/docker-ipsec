@@ -6,8 +6,6 @@ import iptc
 import json
 import subprocess
 
-from json.decoder import JSONDecodeError
-
 def toJSON(obj):
     return json.dumps(obj, ensure_ascii=True, sort_keys=True)
 
@@ -130,7 +128,7 @@ def removeIPTablesRules(filterFunc=None):
                 return True
             try:
                 return filterFunc(json.loads(c[len(COMMENT_PREFIX):]))
-            except json.decoder.JSONDecodeError:
+            except ValueError:
                 return False
         return False
     table = iptc.Table(iptc.Table.NAT)
