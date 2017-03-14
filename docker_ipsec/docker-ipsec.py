@@ -112,7 +112,7 @@ def connection_up(parsed_args):
     connection_name = ipsec_connection['name']
     docker_networks = parsed_args.dockerNetworks
     if len(docker_networks) > 0:
-        docker_client = docker.Client()
+        docker_client = docker.DockerClient()
         docker_network_to_ip_network = functools.partial(ip_network_for_docker_network, docker_client)
         docker_ip_networks = tuple(map(docker_network_to_ip_network, docker_networks))
     else:
@@ -145,8 +145,7 @@ def add_docker_networks(parsed_args):
     connection_name = ipsec_connection['name']
     docker_networks = parsed_args.dockerNetworks
 
-    docker_client = docker.Client()
-    docker_network_to_ip_network = functools.partial(ip_network_for_docker_network, docker_client)
+    docker_client = docker.DockerClient()
     docker_network_to_ip_network = functools.partial(ip_network_for_docker_network, docker_client)
     docker_ip_networks = tuple(map(docker_network_to_ip_network, docker_networks))
     ip_route = IPRoute()
@@ -158,7 +157,7 @@ def add_docker_networks(parsed_args):
 
 def remove_docker_networks(parsed_args):
     docker_networks = parsed_args.dockerNetworks
-    docker_client = docker.Client()
+    docker_client = docker.DockerClient()
     docker_network_to_ip_network = functools.partial(ip_network_for_docker_network, docker_client)
     docker_ip_networks = set(map(docker_network_to_ip_network, docker_networks))
 

@@ -72,20 +72,20 @@ def route_table_entry_matches_ipsec_connection(ipsec_connection, entry:IPSecInfo
     return right_ip_network == entry_dest_ip_network
 
 
-def ip_network_for_docker_network(client: docker.Client,
+def ip_network_for_docker_network(client: docker.DockerClient,
                                   network_name: str):
-    networks = client.networks(names=(network_name,))
+    networks = client.networks.list(names=[network_name])
     networks_count = len(networks)
     if networks_count == 0:
-        raise DockerIPSecError('Docker network not found: {0}'.format(network_name))
+        raise DockerIPSecError('a Docker network not found: {0}'.format(network_name))
     if networks_count > 1:
         names = map(lambda n: n['Name'], networks)
         raise DockerIPSecError('More than one docker network found:\n{0}'.format('\n'.join(names)))
     network = networks[0]
-    if network['Name'] != network_name:
-        raise DockerIPSecError('Docker network not found: {0}'.format(network_name))
-    network_id = network['Id']
-    ipam = network.get('IPAM', None)
+    if network.name != network_name:
+        raise DockerIPSecError('b Docker network not found: {0}'.format(network_name))
+    network_id = network.id
+    ipam = network.attrs.get('IPAM', None)
     if not isinstance(ipam, dict):
         raise DockerIPSecError('Docker network does not contain IPAM info:{0} ({1})'.format(network_name, network_id))
     ipam_configs = ipam.get('Config', None)
