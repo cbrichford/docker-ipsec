@@ -64,12 +64,19 @@ class IPSecInfo:
 
 
 def route_table_entry_matches_ipsec_connection(ipsec_connection, entry:IPSecInfoEntry):
-    right_subnet = ipsec_connection.get('rightsubnet', None)
-    if right_subnet is None:
+    right_subnets = ipsec_connection.get('rightsubnet', None)
+    if right_subnets is None:
         raise DockerIPSecError('Unable to determine rightsubnet for connection: {0}'.format(toJSON(ipsec_connection)))
-    right_ip_network = netaddr.IPNetwork(right_subnet)
+
     entry_dest_ip_network = netaddr.IPNetwork(entry.destination_cidr())
-    return right_ip_network == entry_dest_ip_network
+
+    for right_subnet in right_subnets.split(','):
+        right_ip_network = netaddr.IPNetwork(right_subnet)
+
+        if right_ip_network == entry_dest_ip_network:
+            return True
+
+    return False
 
 
 def ip_network_for_docker_network(client: docker.DockerClient,
